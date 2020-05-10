@@ -66,9 +66,8 @@ def prefsuf(url):
         return -1
     return 1
 
-def subdomain(url):
-    result=tldextract.extract(url)
-    subdomain=result.subdomain
+def subdomain(tldextract_output):
+    subdomain=tldextract_output.subdomain
     if subdomain=="" or subdomain=="www":
         return 1
     dot=0
@@ -84,10 +83,10 @@ def subdomain(url):
         return -1
 
 
-def certificate(url,domain):
+def certificate(url,tldextract_output):
     #Check when ssl certificate is valid until and who issued it
     if url.startswith("https"):
-        result=tldextract.extract(url)
+        result=tldextract_output
         domain=result.subdomain + '.' + result.domain+'.'+result.suffix
 
         try:
@@ -117,18 +116,7 @@ def certificate(url,domain):
     return -1
 
 
-def domain_reg_length(url,domain):
-    result=tldextract.extract(url)
-    # domain=None
-    # count=0
-    # while domain is None and count < 50:
-    #     try:
-    #         count=count+1
-    #         domain=whois.whois(result.subdomain+'.'+result.domain+'.'+result.suffix)
-    #     except:
-    #         pass
-    # if domain is None:
-    #     return 0
+def domain_reg_length(domain):
     if domain is None:
         return 0
     exp_date=domain.expiration_date
@@ -149,7 +137,7 @@ def domain_reg_length(url,domain):
 
 
 
-def favicon_domain(url):
+def favicon_domain(url,tldextract_output):
     try:
         icons = favicon.get(url)
     except:
@@ -159,8 +147,7 @@ def favicon_domain(url):
     icon=icons[0]
     url_favicon=(icon.url)
     result_favicon=tldextract.extract(url_favicon)
-    result=tldextract.extract(url)
-    if result_favicon.domain==result.domain:
+    if result_favicon.domain==tldextract_output.domain:
         return 1
     return -1
 
@@ -171,9 +158,8 @@ def favicon_domain(url):
 #     print("http")
 #     return -1
 
-def https_domain(url):
-    result=tldextract.extract(url)
-    if "https" in (result.subdomain + '.' + result.domain+'.'+result.suffix):
+def https_domain(tldextract_output):
+    if "https" in (tldextract_output.subdomain + '.' + tldextract_output.domain+'.'+tldextract_output.suffix):
         # print("https in domain")
         return -1
     return 1
@@ -189,7 +175,7 @@ def request_url(site,soup):
         site_domain=tldextract.extract(site)
         if len(tag_domain) == 0:
             same=same+1
-        if not tag_domain.subdomain+'.'+tag_domain.domain==site_domain.subdomain+'.'+site_domain.domain:
+        if tag_domain.domain != site_domain.domain:
             different=different+1
         else:
             same=same+1
@@ -219,7 +205,7 @@ def url_anchor(site,soup):
             same=same+1
         if "void(" in tag:
             different=different+1
-        if not tag_domain.subdomain+'.'+tag_domain.domain==site_domain.subdomain+'.'+site_domain.domain:
+        if tag_domain.domain != site_domain.domain:
             different=different+1
         else:
             same=same+1
@@ -250,7 +236,7 @@ def links_in_tags(site,soup):
         site_domain=tldextract.extract(site)
         if len(tag_domain) == 0:
             same=same+1
-        if not tag_domain.subdomain+'.'+tag_domain.domain==site_domain.subdomain+'.'+site_domain.domain:
+        if tag_domain.domain != site_domain.domain:
             different=different+1
         else:
             same=same+1
@@ -266,7 +252,7 @@ def links_in_tags(site,soup):
     return 0
 
 
-def sfh(url,soup):
+def sfh(url,soup,tldextract_output):
     form = soup.find('form')
     if form is None:
         return 0
@@ -277,10 +263,9 @@ def sfh(url,soup):
         return(-1)
     # if "http" in action or "www" in action or ".com" or ".net" in action:
     result_form=tldextract.extract(action)
-    result=tldextract.extract(url)
     if len(result_form.domain) == 0:
         return 1
-    if not result_form.subdomain+'.'+result_form.domain==result.subdomain+'.'+result.domain:
+    if result_form.domain != tldextract_output.domain:
         return(0)
         # print("sfh_different")
     return(1)
@@ -330,16 +315,7 @@ def Iframe(soup):
         return -1
     return 1
 
-def domain_age(url,domain):
-    result=tldextract.extract(url)
-    # domain=None
-    # count=0
-    # while domain is None and count < 50:
-    #     try:
-    #         count=count+1
-    #         domain=whois.whois(result.domain+'.'+result.suffix)
-    #     except:
-    #         pass
+def domain_age(domain):
     if domain is None:
         return 0
     #Sometimes returns list, sometimes returns one date- how horribly inconvenient!
@@ -354,17 +330,14 @@ def domain_age(url,domain):
         return -1
     return 1
 
-def DNSRecord(url,domain):
-    result=tldextract.extract(url)
-    # domain=whois.whois(result.domain+'.'+result.suffix)
+def DNSRecord(domain):
     if domain is None:
         return -1
     return 1
 
 
-def website_traffic(top_domains,url):
-    result=tldextract.extract(url)
-    if top_domains['Domains'].str.contains(result.domain + '.' + result.suffix).any():
+def website_traffic(top_sites,tldextract_output):
+    if top_sites['Domains'].str.contains(tldextract_output.domain + '.' + tldextract_output.suffix).any():
         # print("topdomain")
         return 1
     return -1
@@ -379,17 +352,16 @@ def website_traffic(top_domains,url):
 # def linkspointing(url):
 #     return -1
 
-def statistical_report(url):
+def statistical_report(url,tldextract_output):
     topips=['64.70.19.203', '216.218.185.162', '172.217.14.161', '175.126.123.219', '156.251.148.212', '54.83.43.69', '47.91.170.222', '173.230.141.80', '103.44.28.169', '103.44.28.181', '108.61.203.22', '23.20.239.12', '153.92.0.100', '141.8.224.221', '184.168.131.241', '122.10.109.175', '209.202.252.66', '199.59.242.153', '69.172.201.153', '91.227.52.108', '35.186.238.101', '185.164.136.124', '69.16.230.42', '18.216.20.136', '211.231.99.250', '59.188.232.88', '160.121.242.52', '91.195.240.126', '37.157.192.102', '67.227.226.240', '52.58.78.16', '198.11.172.242', '3.234.181.234', '172.120.69.45', '204.95.99.26', '193.109.247.10', '52.69.166.231', '23.89.1.166', '18.211.9.206', '72.52.178.23', '204.11.56.48', '193.109.247.224', '47.75.126.218', '156.234.215.125', '23.253.126.58', '23.236.62.147', '47.245.9.22', '104.239.157.210', '208.91.197.46', '209.99.40.223']
     topdomains=["docs.google.com","storage.googleapis.com","firebasestorage.googleapis.com","cheaproomsvalencia.com","playarprint.com",\
     "forms.office.com","bit.ly","sites.google.com","ivanidzakovic.com","drive.google.com","forms.gle","codesandbox.io",".sharepoint.com","onedrive.live.com",\
     "advonationusa.com","infopublishersassociation.com","vmorefraud.com","stolizaparketa.ru","mytanfarma.com","zohard.com","southcountyclassified.com","tptelecom","tinyurl.com"]
     topips=[]
     ip_list = []
-    result=tldextract.extract(url)
     try:
-        ais = socket.getaddrinfo(result.subdomain + '.' + result.domain+'.'+result.suffix,0,0,0,0)
-        for result in ais:
+        ais = socket.getaddrinfo(tldextract_output.subdomain + '.' + tldextract_output.domain+'.'+tldextract_output.suffix,0,0,0,0)
+        for tldextract_output in ais:
           ip_list.append(result[-1][0])
         ip_list = list(set(ip_list))
         for ip in ip_list:

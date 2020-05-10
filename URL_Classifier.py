@@ -15,12 +15,11 @@ def get_features(urls):
     top_sites = pd.read_csv('top-1m.csv')
     top_count = top_sites['Domains'].count()
 
-    features = np.zeros([top_count,25+3])
+    features = np.zeros([urls.count(),25+3])
     already_visited={}
     
-    for i in range(urls['Urls'].count()):
-        url = urls['Urls'][i]
-        print(url)
+    for i in range(urls.count()):
+        url = urls[i]
         
         tldextract_output = tldextract.extract(url)
         site = tldextract_output.subdomain + '.' + tldextract_output.domain + '.' + tldextract_output.suffix
@@ -33,11 +32,10 @@ def get_features(urls):
 
         requests_output = requests.get(url)
         if requests_output.status_code != 200:
-            [IP(url),length(url),shortened(url),at_symbol(url),redirect_slashes(url),prefsuf(url),subdomain(url),certificate(url,domain),0,\
-            0,https_domain(url),0,0,0,0,0,0,0,0,0,0,DNSRecord(url,domain),website_traffic(top_sites,url),statistical_report(url)]
-            print(row)
-            sum_row=sum(row)
-            non_zero=sum(row!=0)
+            row = [IP(url),length(url),shortened(url),at_symbol(url),redirect_slashes(url),prefsuf(url),subdomain(tldextract_output),certificate(url,tldextract_output),0,\
+            0,https_domain(tldextract_output),0,0,0,0,0,0,0,0,0,0,0,DNSRecord(domain),website_traffic(top_sites,tldextract_output),statistical_report(url,tldextract_output)]
+            sum_row=np.sum(row)
+            non_zero=np.sum(row!=0)
             variance=np.var(features)
             row.append(sum_row)
             row.append(non_zero)
@@ -48,10 +46,11 @@ def get_features(urls):
         else:
             page_source = requests_output.text
             soup = BeautifulSoup(page_source, "html.parser")
-            row = [IP(url),length(url),shortened(url),at_symbol(url),redirect_slashes(url),prefsuf(url),subdomain(url),certificate(url,domain),domain_reg_length(url,domain),\
- favicon_domain(url),https_domain(url),request_url(url,soup),url_anchor(url,soup),links_in_tags(url,soup),sfh(url,soup),mailto(soup),redirect(requests_output),on_mouseover(soup),\
-            rightclick(soup),popup(soup),domain_age(url,domain),DNSRecord(url,domain),website_traffic(top_sites,url),statistical_report(url)]
-            print(row)
+            row = [IP(url),length(url),shortened(url),at_symbol(url),redirect_slashes(url),\
+                   prefsuf(url),subdomain(tldextract_output),certificate(url,tldextract_output),domain_reg_length(domain),favicon_domain(url,tldextract_output),\
+                   https_domain(tldextract_output),request_url(url,soup),url_anchor(url,soup),links_in_tags(url,soup),sfh(url,soup,tldextract_output),\
+                   mailto(soup),redirect(requests_output),on_mouseover(soup),rightclick(soup),popup(soup),\
+                   Iframe(soup),domain_age(domain),DNSRecord(domain),website_traffic(top_sites,tldextract_output),statistical_report(url,tldextract_output)]
             sum_row=np.sum(row)
             non_zero=np.sum(row!=0)
             variance=np.var(features)
@@ -60,5 +59,7 @@ def get_features(urls):
             row.append(variance)
             features[i] = row
             already_visited[site]=row
+            
+        print(url,': Completed')
 
     return(features)
