@@ -364,7 +364,7 @@ def DNSRecord(url,domain):
 
 def website_traffic(top_domains,url):
     result=tldextract.extract(url)
-    if result.domain+'.'+result.suffix in top_domains:
+    if top_domains['Domains'].str.contains(result.domain + '.' + result.suffix).any():
         # print("topdomain")
         return 1
     return -1
