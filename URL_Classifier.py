@@ -36,7 +36,7 @@ def get_features(urls):
             0,https_domain(tldextract_output),0,0,0,0,0,0,0,0,0,0,0,DNSRecord(domain),website_traffic(top_sites,tldextract_output),statistical_report(url,tldextract_output)]
             sum_row=np.sum(row)
             non_zero=np.sum(row!=0)
-            variance=np.var(features)
+            variance=np.var(row)
             row.append(sum_row)
             row.append(non_zero)
             row.append(variance)
@@ -53,7 +53,7 @@ def get_features(urls):
                    Iframe(soup),domain_age(domain),DNSRecord(domain),website_traffic(top_sites,tldextract_output),statistical_report(url,tldextract_output)]
             sum_row=np.sum(row)
             non_zero=np.sum(row!=0)
-            variance=np.var(features)
+            variance=np.var(row)
             row.append(sum_row)
             row.append(non_zero)
             row.append(variance)
