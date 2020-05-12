@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import whois
 import re
 import tldextract
-from datetime import datetime
+from datetime
 from dateutil.relativedelta import relativedelta
 from urllib.request import Request, urlopen, ssl, socket
 import json
