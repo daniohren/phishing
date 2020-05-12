@@ -23,17 +23,20 @@ def get_features(urls):
         
         tldextract_output = tldextract.extract(url)
         site = tldextract_output.subdomain + '.' + tldextract_output.domain + '.' + tldextract_output.suffix
-        domain = whois.whois(tldextract_output.domain + '.' + tldextract_output.suffix)
-        
+         
         #Check if we've already ranked this site (then save some time and don't query)
         if site in already_visited:
             features[i] = already_visited[site]
             continue
+		try:        
+			domain = whois.whois(tldextract_output.domain + '.' + tldextract_output.suffix)
+		except:
+			domain=None
 
         requests_output = requests.get(url)
         if requests_output.status_code != 200:
             row = [IP(url),length(url),shortened(url),at_symbol(url),redirect_slashes(url),prefsuf(url),subdomain(tldextract_output),certificate(url,tldextract_output),0,\
-            0,https_domain(tldextract_output),0,0,0,0,0,0,0,0,0,0,0,DNSRecord(domain),website_traffic(top_sites,tldextract_output),statistical_report(url,tldextract_output)]
+            0,https_domain(tldextract_output),-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,DNSRecord(domain),website_traffic(top_sites,tldextract_output),statistical_report(url,tldextract_output)]
             sum_row=np.sum(row)
             non_zero=np.sum(row!=0)
             variance=np.var(row)
