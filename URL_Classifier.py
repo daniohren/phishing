@@ -2,12 +2,11 @@ import csv
 import pandas as pd
 import numpy as np
 from classifiers import *
-import urllib.request
 import tldextract
 from bs4 import BeautifulSoup
 import re
-import urllib.request
 import whois
+import requests
 
 
 
