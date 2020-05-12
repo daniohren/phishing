@@ -28,8 +28,8 @@ def get_features(urls):
         if site in already_visited:
             features[i] = already_visited[site]
             continue
-		try:        
-			domain = whois.whois(tldextract_output.domain + '.' + tldextract_output.suffix)
+	    try:        
+	        domain = whois.whois(tldextract_output.domain + '.' + tldextract_output.suffix)
 		except:
 			domain=None
 
