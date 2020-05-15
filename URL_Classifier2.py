@@ -97,7 +97,7 @@ def prefsuf(tldextract_output):
 def subdomain(tldextract_output):
     subdomain=tldextract_output.subdomain
     if subdomain=="" or subdomain=="www":
-        return 0
+        return 1
     dot=1
     if "www" in subdomain:
         subdomain = subdomain.replace("www.","");
