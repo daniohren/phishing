@@ -112,8 +112,10 @@ def subdomain(tldextract_output):
 def certificate(tldextract_output):
 
     #Check when ssl certificate is valid until and who issued it
-    domain=tldextract_output.subdomain + '.' + tldextract_output.domain+'.'+tldextract_output.suffix
-    # domain="facebook.com"
+    if tldextract_output.subdomain=="":
+        domain=tldextract_output.domain+'.'+tldextract_output.suffix
+    else:
+        domain=tldextract_output.subdomain + '.' + tldextract_output.domain+'.'+tldextract_output.suffix
     try:
         setdefaulttimeout(3)
         cert=ssl.get_server_certificate((domain, 443))
