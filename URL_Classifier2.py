@@ -264,7 +264,7 @@ def get_test_features(urls):
                https_domain(tldextract_output),website_traffic(top_sites,tldextract_output),statistical_report(url,tldextract_output)\
                ,certificate(tldextract_output),domain_age(whois_output), reg_length(whois_output)]
         sum_row=np.sum(row)
-        non_zero=np.sum(row!=0)
+        non_zero=np.count_nonzero(row)
         variance=np.var(row)
         row.append(sum_row)
         row.append(non_zero)
