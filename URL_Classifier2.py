@@ -60,7 +60,7 @@ def tld(tldextract_output):
     if tldextract_output.suffix in dict.keys():
         return -dict[tldextract_output.suffix]
     else:
-         return 0
+         return -0.5
 
 
 def length(url):
