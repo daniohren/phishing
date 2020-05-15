@@ -115,7 +115,7 @@ def certificate(tldextract_output):
     domain=tldextract_output.subdomain + '.' + tldextract_output.domain+'.'+tldextract_output.suffix
     # domain="facebook.com"
     try:
-        ssl.settimeout(3)
+        setdefaulttimeout(3)
         cert=ssl.get_server_certificate((domain, 443))
 
     except:
