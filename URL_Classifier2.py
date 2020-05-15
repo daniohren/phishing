@@ -195,7 +195,7 @@ def statistical_report(url,tldextract_output):
     return 1
 
 
-def get_features(urls):
+def get_training_features(urls):
     top_sites = pd.read_csv('top-1m.csv')
     top_count = top_sites['Domains'].count()
 
@@ -226,6 +226,49 @@ def get_features(urls):
         # row.append(sum_row)
         # row.append(non_zero)
         # row.append(variance)
+        features[i] = row
+        # already_visited[site]=row
+
+        # print(row)
+
+        print(url,i)
+
+    return(features)
+
+
+
+
+def get_test_features(urls):
+    top_sites = pd.read_csv('top-1m.csv')
+    top_count = top_sites['Domains'].count()
+
+    features = np.zeros([urls.count(),14])
+    # already_visited={}
+
+    for i in range(urls.count()):
+        url = urls[i]
+        if not url.startswith("http"):
+            url="https://"+url
+
+        tldextract_output = tldextract.extract(url)
+        site = tldextract_output.subdomain + '.' + tldextract_output.domain + '.' + tldextract_output.suffix
+        try:
+            # whois_output=whois.whois(tldextract_output.domain + '.' + tldextract_output.suffix)
+            whois_output=whois.whois(url)
+        except:
+            whois_output=None
+
+
+        row = [IPinURL(url),length(url),shortened(url),at_symbol(url),redirect_slashes(url),\
+               prefsuf(tldextract_output),subdomain(tldextract_output),tld(tldextract_output),\
+               https_domain(tldextract_output),website_traffic(top_sites,tldextract_output),statistical_report(url,tldextract_output)\
+               ,certificate(tldextract_output),domain_age(whois_output), reg_length(whois_output)]
+        sum_row=np.sum(row)
+        non_zero=np.sum(row!=0)
+        variance=np.var(row)
+        row.append(sum_row)
+        row.append(non_zero)
+        row.append(variance)
         features[i] = row
         # already_visited[site]=row
 
