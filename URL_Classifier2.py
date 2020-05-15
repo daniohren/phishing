@@ -255,7 +255,7 @@ def get_test_features(urls):
         tldextract_output = tldextract.extract(url)
         site = tldextract_output.subdomain + '.' + tldextract_output.domain + '.' + tldextract_output.suffix
         #Avoid duplication of work for repeat urls
-        if site in already_visited:
+        if site in already_analysed:
             features[i] = already_analysed[site]
             continue
             
