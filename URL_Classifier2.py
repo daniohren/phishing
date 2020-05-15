@@ -10,22 +10,27 @@ from dateutil.relativedelta import relativedelta
 import requests
 import ssl
 from IPy import IP
+from socket import *
 
 
 
 #ADDRESS BAR FEATURES
 def alive(url):
     try:
-        requests_output = requests.get(url,timeout=5)
+        requests_output = requests.get(url,timeout=3)
         if requests_output.status_code==200:
             return 1
         if requests_output.status_code==401 or requests_output.status_code==403:
             return 0
         else:
             return -1
-    except:
+    except requests.exceptions.Timeout:
         return -1
 
+    except requests.exceptions.ConnectionError:
+        return -1
+    except:
+        return 0
 
 
 def is_private(ip):
@@ -56,8 +61,6 @@ def tld(tldextract_output):
         return -dict[tldextract_output.suffix]
     else:
          return 0
-
-
 
 
 def length(url):
@@ -112,12 +115,12 @@ def certificate(tldextract_output):
     domain=tldextract_output.subdomain + '.' + tldextract_output.domain+'.'+tldextract_output.suffix
     # domain="facebook.com"
     try:
+        ssl.settimeout(3)
         cert=ssl.get_server_certificate((domain, 443))
-        return 1
+
     except:
         return -1
-
-
+    return 1
 
 
 def domain_age(whois_output):
@@ -126,6 +129,10 @@ def domain_age(whois_output):
         return 0.18
     reg_date=whois_output.creation_date
     # six_months_ago = datetime.now() - relativedelta(months=6)
+    if isinstance(reg_date,str):
+        if "Aug-1996" in str(reg_date):
+            return 9
+
     if isinstance(reg_date,list):
         # print(reg_date)
         reg_date=reg_date[0]
@@ -203,7 +210,8 @@ def get_features(urls):
         tldextract_output = tldextract.extract(url)
         site = tldextract_output.subdomain + '.' + tldextract_output.domain + '.' + tldextract_output.suffix
         try:
-            whois_output=whois.whois(tldextract_output.domain + '.' + tldextract_output.suffix)
+            # whois_output=whois.whois(tldextract_output.domain + '.' + tldextract_output.suffix)
+            whois_output=whois.whois(url)
         except:
             whois_output=None
 
@@ -220,9 +228,9 @@ def get_features(urls):
         # row.append(variance)
         features[i] = row
         # already_visited[site]=row
-        print(url,i)
+
         # print(row)
 
-        # print(url,i)
+        print(url,i)
 
     return(features)
