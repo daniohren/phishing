@@ -242,7 +242,7 @@ def get_test_features(urls):
     top_sites = pd.read_csv('top-1m.csv')
     top_count = top_sites['Domains'].count()
 
-    features = np.zeros([urls.count(),14])
+    features = np.zeros([urls.count(),17])
     # already_visited={}
 
     for i in range(urls.count()):
