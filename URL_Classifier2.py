@@ -243,7 +243,7 @@ def get_test_features(urls):
     top_count = top_sites['Domains'].count()
 
     features = np.zeros([urls.count(),17])
-    # already_visited={}
+    already_analysed={}
 
     for i in range(urls.count()):
         url = urls[i]
@@ -252,8 +252,12 @@ def get_test_features(urls):
 
         tldextract_output = tldextract.extract(url)
         site = tldextract_output.subdomain + '.' + tldextract_output.domain + '.' + tldextract_output.suffix
+        #Avoid duplication of work for repeat urls
+        if site in already_visited:
+            features[i] = already_analysed[site]
+            continue
+            
         try:
-            # whois_output=whois.whois(tldextract_output.domain + '.' + tldextract_output.suffix)
             whois_output=whois.whois(url)
         except:
             whois_output=None
@@ -270,7 +274,7 @@ def get_test_features(urls):
         row.append(non_zero)
         row.append(variance)
         features[i] = row
-        # already_visited[site]=row
+        already_analysed[site]=row
 
         # print(row)
 
