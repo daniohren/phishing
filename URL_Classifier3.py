@@ -263,7 +263,7 @@ def statistical_report(url,tldextract_output):
 def get_train_features(urls):
     top_sites = pd.read_csv('top-1h.csv')
 
-    features = np.zeros([urls.count(),17])
+    features = np.zeros([urls.count(),18])
     df = pd.read_excel('spamhaus_13052020.xlsx')
     tld_dict=df.set_index('tld')['score'].to_dict()
     # already_visited={}
@@ -301,7 +301,7 @@ def get_test_features(urls):
     top_sites = pd.read_csv('top-1h.csv')
 
 
-    features = np.zeros([urls.count(),20])
+    features = np.zeros([urls.count(),21])
     df = pd.read_excel('spamhaus_13052020.xlsx')
     tld_dict=df.set_index('tld')['score'].to_dict()
 
