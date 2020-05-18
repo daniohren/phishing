@@ -1,18 +1,11 @@
 import csv
 import pandas as pd
 import tldextract
-# from bs4 import BeautifulSoup
 import re
 import whois
 import numpy as np
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
-import requests
-import ssl
 from IPy import IP
-from socket import *
 import math
-import OpenSSL
 
 
 #ADDRESS BAR FEATURES
